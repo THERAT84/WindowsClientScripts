@@ -25,6 +25,7 @@ reg add "HKLM\Software\Policies\Microsoft\Dsh" /v "AllowNewsAndInterests" /t REG
 
 # Disable Search on taskbar
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Search" /v "SearchButtonMarkup" /t REG_DWORD /d 0 /f
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Search" /v "SearchboxTaskbarMode" /t REG_DWORD /d 0 /f
 
 # Restart explorer
 Get-Process -Name explorer | Stop-Process -Force
