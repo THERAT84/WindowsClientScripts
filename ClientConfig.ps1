@@ -32,11 +32,11 @@ reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Search" /v "SearchboxTas
 $numlockvalue = Get-ItemProperty -Path 'Registry::HKEY_USERS\.DEFAULT\Control Panel\Keyboard' -Name InitialKeyBoardIndicators
 if ($numlockvalue -eq 0)
 {
-    Set-ItemProperty -Path 'Registry::HKEY_USERS\.DEFAULT\Control Panel\Keyboard' -Name InitialKeyBoardIndicators -PropertyType DWord -Value 2 -Force
+    Set-ItemPropertyValue -Path 'Registry::HKEY_USERS\.DEFAULT\Control Panel\Keyboard' -Name InitialKeyBoardIndicators -PropertyType DWord -Value 2 -Force
 }
 elseif ($numlockvalue -eq 2147483648)
 {
-    Set-ItemProperty -Path 'Registry::HKEY_USERS\.DEFAULT\Control Panel\Keyboard' -Name InitialKeyBoardIndicators -PropertyType DWord -Value 2147483650 -Force
+    Set-ItemPropertyValue -Path 'Registry::HKEY_USERS\.DEFAULT\Control Panel\Keyboard' -Name InitialKeyBoardIndicators -PropertyType DWord -Value 2147483650 -Force
 } 
 
 # Restart explorer
