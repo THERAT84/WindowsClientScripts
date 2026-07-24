@@ -8,24 +8,71 @@ Modifications:
 #>
 ##########################################################################
 
+#declare variables
+$ipFiler ="192.168.x.x"
+$ipNAS ="192.168.x.x"
+$hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
+$hostname = "Hostname"
+
+#declare function
+function Set-Hostsfile {
+    $hostsContent = Get-Content -Path $hostsPath
+    $existingEntry = $hostsContent | Where-Object { $_ -match "\b$hostname\b" }
+
+        if ($existingEntry) {
+            Write-Output ">>> Eintrag für $hostname gefunden – wird entfernt."
+            # Entfernen des Eintrags
+            $hostsContent = $hostsContent | Where-Object { $_ -notmatch "\b$hostname\b" }
+
+            # Hosts-Datei überschreiben (mit Admin-Rechten erforderlich!)
+            Set-Content -Path $hostsPath -Value $hostsContent -Force
+            Write-Output ">>> Hosts-Datei erfolgreich aktualisiert."
+        } else {
+    Write-Output ">>> Kein Eintrag für ${$_.hostname} gefunden. Keine Änderung erforderlich."
+}
+} 
+function Set-FileServer {
+    $entryFiler="$ipFiler`t$hostname"
+    Write-Host "Eintrag $entryFileServer wird hinzugefügt"
+    $hostsContent += $entryFiler
+    Set-Content -Path $hostsPath -Value $hostsContent -Force
+    Remove-SmbMapping -LocalPath "L:" -Force
+    Remove-SmbMapping -LocalPath "K:" -Force
+    Clear-DnsClientCache
+    New-PSDrive -Persist -Name "L" -PSProvider "FileSystem" -Root $hostname\test1
+    New-PSDrive -Persist -Name "K" -PSProvider "FileSystem" -Root $hostname\test2
+}
+function Set-NAS {
+    $entryNAS="$ipNAS`t$hostname"
+    Write-Host "Eintrag $entryNAS wird hinzugefügt"
+    $hostsContent += $entryNAS
+    Set-Content -Path $hostsPath -Value $hostsContent -Force
+    Remove-SmbMapping -LocalPath "L:" -Force
+    Remove-SmbMapping -LocalPath "K:" -Force
+    Clear-DnsClientCache
+    New-PSDrive -Persist -Name "L" -PSProvider "FileSystem" -Root $hostname\test1
+    New-PSDrive -Persist -Name "K" -PSProvider "FileSystem" -Root $hostname\test2
+}
 
 do {
     Clear-Host
     Write-Host "=== MEIN AUSWAHLMENÜ ==="
-    Write-Host "1: Datum und Uhrzeit anzeigen"
-    Write-Host "2: Laufwerke auflisten"
+    Write-Host "1: Verbindung FileServer"
+    Write-Host "2: Verbindung NAS"
     Write-Host "3: Beenden"
     
     $wahl = Read-Host "Bitte eine Zahl eingeben"
 
     switch ($wahl) {
         '1' {
-            Get-Date
-            Read-Host "Weiter mit Enter..."
+            Set-Hostsfile
+            Set-FileServer
+            Write-Host "Konfiguration für Arbeiten auf FileServer abgeschlossen"
         }
         '2' {
-            Get-PSDrive
-            Read-Host "Weiter mit Enter..."
+            Set-Hostsfile
+            Set-NAS
+            Write-Host "Konfiguration für Arbeiten auf dem NAS abgeschlossen"
         }
         '3' {
             Write-Host "Tschüss!"
@@ -39,10 +86,8 @@ do {
 
 
 
-$hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
-$hostname = "Hostname"
 
-Write-Output ">>> Starte Rücksetzung für Arbeiten außerhalb von Trapez..."
+<#Write-Output ">>> Starte Rücksetzung für Arbeiten außerhalb von Trapez..."
 
 # Hosts-Datei einlesen
 $hostsContent = Get-Content -Path $hostsPath
@@ -61,6 +106,7 @@ if ($existingEntry) {
 } else {
     Write-Output ">>> Kein Eintrag für $._hostname gefunden. Keine Änderung erforderlich."
 }
+#>
 
 # DNS-Cache leeren
 Write-Output ">>> Leere DNS-Cache..."
@@ -96,7 +142,7 @@ Write-Host "SMB Cleanup abgeschlossen."
 
 #Erstellung des neuen Eintrags
 
-$newIP = "IP"
+#$newIP = "IP"
 
 Write-Output ">>> Starte Konfiguration für Standort Trapez..."
 
