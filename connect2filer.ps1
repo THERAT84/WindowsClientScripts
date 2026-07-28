@@ -13,6 +13,8 @@ $ipFileServer ="192.168.x.x"
 $ipNAS ="192.168.x.x"
 $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
 $hostname = "Hostname"
+$hostsentryFileServer ="$ipFileServer`t$hostname"
+$hostsentryNAS = "$ipNAS`t$hostname"
 
 #declare function
 function Set-Hostsfile {
@@ -63,10 +65,13 @@ function Set-Server {
     Add-Content $hostsPath $entry
     Remove-SmbMapping -LocalPath "L:" -Force -ErrorAction SilentlyContinue
     Remove-SmbMapping -LocalPath "K:" -Force -ErrorAction SilentlyContinue
+    Write-Host "ClearDNS Cache"
     Clear-DnsClientCache
-    #$Credential = Import-Clixml "C:\Secure\NetworkCredential.xml"
-    New-PSDrive -Persist -Name L -PSProvider FileSystem -Root "\\$hostname\test1" -Credential test
-    New-PSDrive -Persist -Name K -PSProvider FileSystem -Root "\\$hostname\test2" -Credential test
+    net stop workstation /y 
+    net start workstation
+    $Credential = Import-Clixml "C:\Secure\Credential.xml"
+    New-PSDrive -Persist -Name L -PSProvider FileSystem -Root "\\$hostname\test1" -Credential $Credential
+    New-PSDrive -Persist -Name K -PSProvider FileSystem -Root "\\$hostname\test2" -Credential $Credential
 }
 
 do {
