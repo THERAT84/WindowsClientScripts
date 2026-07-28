@@ -9,7 +9,7 @@ Modifications:
 ##########################################################################
 
 #declare variables
-$ipFiler ="192.168.x.x"
+$ipFileServer ="192.168.x.x"
 $ipNAS ="192.168.x.x"
 $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
 $hostname = "Hostname"
@@ -28,30 +28,45 @@ function Set-Hostsfile {
             Set-Content -Path $hostsPath -Value $hostsContent -Force
             Write-Output ">>> Hosts-Datei erfolgreich aktualisiert."
         } else {
-    Write-Output ">>> Kein Eintrag für ${$_.hostname} gefunden. Keine Änderung erforderlich."
+    Write-Output ">>> Kein Eintrag für $hostname gefunden. Keine Änderung erforderlich."
 }
 } 
+<#
 function Set-FileServer {
-    $entryFiler="$ipFiler`t$hostname"
+    $entryFileServer="$ipFileServer`t$hostname"
     Write-Host "Eintrag $entryFileServer wird hinzugefügt"
-    $hostsContent += $entryFiler
+    $hostsContent += $entryFileServer
     Set-Content -Path $hostsPath -Value $hostsContent -Force
-    Remove-SmbMapping -LocalPath "L:" -Force
-    Remove-SmbMapping -LocalPath "K:" -Force
+    Remove-SmbMapping -LocalPath "L:" -Force -ErrorAction SilentlyContinue
+    Remove-SmbMapping -LocalPath "K:" -Force -ErrorAction SilentlyContinue
     Clear-DnsClientCache
-    New-PSDrive -Persist -Name "L" -PSProvider "FileSystem" -Root $hostname\test1
-    New-PSDrive -Persist -Name "K" -PSProvider "FileSystem" -Root $hostname\test2
+    New-PSDrive -Persist -Name "L" -PSProvider "FileSystem" -Root \\$hostname\test1
+    New-PSDrive -Persist -Name "K" -PSProvider "FileSystem" -Root \\$hostname\test2
 }
 function Set-NAS {
     $entryNAS="$ipNAS`t$hostname"
     Write-Host "Eintrag $entryNAS wird hinzugefügt"
     $hostsContent += $entryNAS
     Set-Content -Path $hostsPath -Value $hostsContent -Force
-    Remove-SmbMapping -LocalPath "L:" -Force
-    Remove-SmbMapping -LocalPath "K:" -Force
+    Remove-SmbMapping -LocalPath "L:" -Force -ErrorAction SilentlyContinue
+    Remove-SmbMapping -LocalPath "K:" -Force -ErrorAction SilentlyContinue
     Clear-DnsClientCache
-    New-PSDrive -Persist -Name "L" -PSProvider "FileSystem" -Root $hostname\test1
-    New-PSDrive -Persist -Name "K" -PSProvider "FileSystem" -Root $hostname\test2
+    New-PSDrive -Persist -Name "L" -PSProvider "FileSystem" -Root \\$hostname\test1
+    New-PSDrive -Persist -Name "K" -PSProvider "FileSystem" -Root \\$hostname\test2
+}
+#>
+
+function Set-Server {
+    param([string]$IP)
+    $entry = "$IP`t$hostname"
+    Write-Host "Eintrag $entry wird hinzugefügt"
+    Add-Content $hostsPath $entry
+    Remove-SmbMapping -LocalPath "L:" -Force -ErrorAction SilentlyContinue
+    Remove-SmbMapping -LocalPath "K:" -Force -ErrorAction SilentlyContinue
+    Clear-DnsClientCache
+    #$Credential = Import-Clixml "C:\Secure\NetworkCredential.xml"
+    New-PSDrive -Persist -Name L -PSProvider FileSystem -Root "\\$hostname\test1" -Credential test
+    New-PSDrive -Persist -Name K -PSProvider FileSystem -Root "\\$hostname\test2" -Credential test
 }
 
 do {
@@ -66,12 +81,14 @@ do {
     switch ($wahl) {
         '1' {
             Set-Hostsfile
-            Set-FileServer
+            Start-Sleep -Milliseconds 200
+            Set-Server -IP $ipFileServer
             Write-Host "Konfiguration für Arbeiten auf FileServer abgeschlossen"
         }
         '2' {
             Set-Hostsfile
-            Set-NAS
+            Start-Sleep -Milliseconds 200
+            Set-Server -IP $ipNAS
             Write-Host "Konfiguration für Arbeiten auf dem NAS abgeschlossen"
         }
         '3' {
