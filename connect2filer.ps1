@@ -33,31 +33,6 @@ function Set-Hostsfile {
     Write-Output ">>> Kein Eintrag für $hostname gefunden. Keine Änderung erforderlich."
 }
 } 
-<#
-function Set-FileServer {
-    $entryFileServer="$ipFileServer`t$hostname"
-    Write-Host "Eintrag $entryFileServer wird hinzugefügt"
-    $hostsContent += $entryFileServer
-    Set-Content -Path $hostsPath -Value $hostsContent -Force
-    Remove-SmbMapping -LocalPath "L:" -Force -ErrorAction SilentlyContinue
-    Remove-SmbMapping -LocalPath "K:" -Force -ErrorAction SilentlyContinue
-    Clear-DnsClientCache
-    New-PSDrive -Persist -Name "L" -PSProvider "FileSystem" -Root \\$hostname\test1
-    New-PSDrive -Persist -Name "K" -PSProvider "FileSystem" -Root \\$hostname\test2
-}
-function Set-NAS {
-    $entryNAS="$ipNAS`t$hostname"
-    Write-Host "Eintrag $entryNAS wird hinzugefügt"
-    $hostsContent += $entryNAS
-    Set-Content -Path $hostsPath -Value $hostsContent -Force
-    Remove-SmbMapping -LocalPath "L:" -Force -ErrorAction SilentlyContinue
-    Remove-SmbMapping -LocalPath "K:" -Force -ErrorAction SilentlyContinue
-    Clear-DnsClientCache
-    New-PSDrive -Persist -Name "L" -PSProvider "FileSystem" -Root \\$hostname\test1
-    New-PSDrive -Persist -Name "K" -PSProvider "FileSystem" -Root \\$hostname\test2
-}
-#>
-
 function Set-Server {
     param([string]$IP)
     $entry = "$IP`t$hostname"
