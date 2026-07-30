@@ -1,5 +1,5 @@
 <#########################################################################
-Scriptname:     connect2filer.ps1
+Scriptname:     edit_hosts.ps1
 Function:       switches hostsentrys and connects to new share
 Created at:     24.07.2026
 Author:         THERAT84
@@ -56,16 +56,7 @@ function Set-Server {
     Clear-DnsClientCache
     net stop workstation /y 
     net start workstation
-    if($ipNAS){
-        $Credential = Import-Clixml -Path "C:\secret\cred.xml"
-        New-PSDrive -Persist -Name L -PSProvider FileSystem -Root "\\$hostname\testshare" -Credential $Credential
-        New-PSDrive -Persist -Name K -PSProvider FileSystem -Root "\\$hostname\testshare2" -Credential $Credential
-    }
-        else{
-            New-PSDrive -Persist -Name L -PSProvider FileSystem -Root "\\$hostname\testshare"
-            New-PSDrive -Persist -Name K -PSProvider FileSystem -Root "\\$hostname\testshare2"
-        }
-    
+    Start-Process powershell -Credential "domain\$Env:username" -ArgumentList "-File 'C:\script\map_drives.ps1'"
 }
 
 do {
