@@ -1,10 +1,10 @@
 <#########################################################################
 Scriptname:     edit_hosts.ps1
-Function:       switches hostsentrys and connects to new share
-Created at:     24.07.2026
+Function:       Edits hosts entrys
+Created at:     30.07.2026
 Author:         THERAT84
 Version:        1.0
-Modifications:  Added new function for hostsfile handling
+Modifications:  
 #>
 ##########################################################################
 

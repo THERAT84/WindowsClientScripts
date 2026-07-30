@@ -1,18 +1,19 @@
 <#########################################################################
 Scriptname:     map_drives.ps1
-Function:       switches hostsentrys and connects to new share
-Created at:     24.07.2026
+Function:       maps shares
+Created at:     .07.2026
 Author:         THERAT84
 Version:        1.0
-Modifications:  Added new function for hostsfile handling
+Modifications:  
 #>
 ##########################################################################
 
 $ipFileServer ="192.168.x.x"
 $ipNAS ="192.168.x.x"
 $hostname = "hostname"
+$hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
 
-if($ipNAS){
+if((Get-Content $hostsPath) -contains $ipNAS){
     $Credential = Import-Clixml -Path "C:\secret\cred.xml"
     New-PSDrive -Persist -Name L -PSProvider FileSystem -Root "\\$hostname\testshare" -Credential $Credential
     New-PSDrive -Persist -Name K -PSProvider FileSystem -Root "\\$hostname\testshare2" -Credential $Credential
