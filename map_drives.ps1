@@ -20,7 +20,7 @@ if((Get-Content $hostsPath) -contains $ipNAS){
     Write-Host "NAS Laufwerke verbunden"
 }
     else{
-        New-PSDrive -Persist -Name L -PSProvider FileSystem -Root "\\$hostname\testshare"
-        New-PSDrive -Persist -Name K -PSProvider FileSystem -Root "\\$hostname\testshare2"
+        New-PSDrive -Persist -Name L -PSProvider FileSystem -Root "\\$hostname\testshare -Scope Global"
+        New-PSDrive -Persist -Name K -PSProvider FileSystem -Root "\\$hostname\testshare2 -Scope Global"
         Write-Host "FileServer Laufwerke verbunden"
     }
