@@ -33,7 +33,6 @@ function Set-Hostsfile {
     else {
         Copy-Item $hostsPath "$hostsPath.bak" -Force
     }    
-    
     # Datei als einzelne Zeilen lesen
     $lines = [System.Collections.Generic.List[string]](Get-Content $hostsPath)
 
@@ -43,7 +42,6 @@ function Set-Hostsfile {
             $lines.RemoveAt($i)
         }
     }
-
     # neuen Eintrag anhängen
     $lines.Add($Target)
     # zurückschreiben
@@ -52,7 +50,6 @@ function Set-Hostsfile {
     Write-Host "Hosts-Eintrag gesetzt: $Target"
 }
 function Set-Server {
-    param([string]$IP)
     Remove-SmbMapping -LocalPath "L:" -Force -ErrorAction SilentlyContinue
     Remove-SmbMapping -LocalPath "K:" -Force -ErrorAction SilentlyContinue
     Write-Host "ClearDNS Cache"
@@ -75,14 +72,14 @@ do {
         '1' {
             Set-Hostsfile -Server FileServer
             Start-Sleep -Milliseconds 200
-            Set-Server -IP $ipFileServer
+            Set-Server 
             Write-Host "Konfiguration für Arbeiten auf FileServer abgeschlossen"
             Read-Host "Drücke Enter zum Fortfahren..."
         }
         '2' {
             Set-Hostsfile -Server NAS
             Start-Sleep -Milliseconds 200
-            Set-Server -IP $ipNAS
+            Set-Server 
             Write-Host "Konfiguration für Arbeiten auf dem NAS abgeschlossen"
             Read-Host "Drücke Enter zum Fortfahren..."
         }
