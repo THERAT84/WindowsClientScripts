@@ -28,9 +28,12 @@ function Set-Hostsfile {
         'FileServer' { $hostsentryFileServer }
         'NAS'        { $hostsentryNAS }
     }
-
-    Copy-Item $hostsPath "$hostsPath.bak" -Force
-
+    if (Test-Path $hostsPath.bak)
+        {Write-Host "Backup of file hosts allready exists"}
+    else {
+        Copy-Item $hostsPath "$hostsPath.bak" -Force
+    }    
+    
     # Datei als einzelne Zeilen lesen
     $lines = [System.Collections.Generic.List[string]](Get-Content $hostsPath)
 

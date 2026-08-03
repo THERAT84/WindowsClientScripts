@@ -13,14 +13,14 @@ $ipNAS ="192.168.x.x"
 $hostname = "hostname"
 $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
 
-if((Get-Content $hostsPath) -contains $ipNAS){
+if ((Get-Content $hostsPath) -match [regex]::Escape($ipNAS)){
     $Credential = Import-Clixml -Path "C:\secret\cred.xml"
     New-PSDrive -Persist -Name L -PSProvider FileSystem -Root "\\$hostname\testshare" -Credential $Credential
     New-PSDrive -Persist -Name K -PSProvider FileSystem -Root "\\$hostname\testshare2" -Credential $Credential
     Write-Host "NAS Laufwerke verbunden"
 }
     else{
-        New-PSDrive -Persist -Name L -PSProvider FileSystem -Root "\\$hostname\testshare -Scope Global"
-        New-PSDrive -Persist -Name K -PSProvider FileSystem -Root "\\$hostname\testshare2 -Scope Global"
+        New-PSDrive -Persist -Name L -PSProvider FileSystem -Root "\\$hostname\testshare" -Scope Global
+        New-PSDrive -Persist -Name K -PSProvider FileSystem -Root "\\$hostname\testshare2" -Scope Global
         Write-Host "FileServer Laufwerke verbunden"
     }
