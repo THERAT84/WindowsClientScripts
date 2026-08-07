@@ -23,30 +23,24 @@ function Set-Hostsfile {
     $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
     $hostsentryFileServer = "$ipFileServer`t$hostname"
     $hostsentryNAS        = "$ipNAS`t$hostname"
+    $backup = "$hostsPath.bak"
 
     $Target = switch ($Server) {
         'FileServer' { $hostsentryFileServer }
         'NAS'        { $hostsentryNAS }
     }
-    if (Test-Path $hostsPath.bak)
-        {Write-Host "Backup of file hosts allready exists"}
-    else {
-        Copy-Item $hostsPath "$hostsPath.bak" -Force
-    }    
-    # Datei als einzelne Zeilen lesen
-    $lines = [System.Collections.Generic.List[string]](Get-Content $hostsPath)
+    if (-not (Test-Path $backup))
+        {Copy-Item $hostsPath $backup -Force}
 
-    # Alle Einträge mit diesem Hostnamen entfernen
-    for ($i = $lines.Count - 1; $i -ge 0; $i--) {
-        if ($lines[$i] -like "*$hostname*") {
-            $lines.RemoveAt($i)
-        }
-    }
-    # neuen Eintrag anhängen
-    $lines.Add($Target)
-    # zurückschreiben
-    $lines | Set-Content -Path $hostsPath -Encoding ASCII
-
+    # Hosts aus sauberem Backup wiederherstellen
+    Copy-Item $backup $hostsPath -Force
+    # Originalinhalt laden
+    $lines = @(Get-Content $backup)
+    $lines += $target
+    $tempFile = "$hostsPath.tmp"
+    $lines | Set-Content $tempFile -Encoding ASCII
+    Copy-Item $tempFile $hostsPath -Force
+    Remove-Item $tempFile
     Write-Host "Hosts-Eintrag gesetzt: $Target"
 }
 function Set-Server {
@@ -56,7 +50,7 @@ function Set-Server {
     Clear-DnsClientCache
     net stop workstation /y 
     net start workstation
-    Start-Process powershell -Credential "domain\$Env:username" -ArgumentList "-File 'C:\script\map_drives.ps1'"
+    Start-Process powershell -Credential "domain\$Env:username" -ArgumentList "-File 'C:\secret\map_drives.ps1'"
 }
 
 do {

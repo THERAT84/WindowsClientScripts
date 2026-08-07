@@ -1,7 +1,7 @@
 <#########################################################################
 Scriptname:     map_drives.ps1
 Function:       maps shares
-Created at:     .07.2026
+Created at:     30.07.2026
 Author:         THERAT84
 Version:        1.0
 Modifications:  
@@ -15,12 +15,12 @@ $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
 
 if ((Get-Content $hostsPath) -match [regex]::Escape($ipNAS)){
     $Credential = Import-Clixml -Path "C:\secret\cred.xml"
-    New-PSDrive -Persist -Name L -PSProvider FileSystem -Root "\\$hostname\testshare" -Credential $Credential
-    New-PSDrive -Persist -Name K -PSProvider FileSystem -Root "\\$hostname\testshare2" -Credential $Credential
+    New-PSDrive -Name L -PSProvider FileSystem -Root "\\$hostname\testshare" -Credential $Credential
+    New-PSDrive -Name K -PSProvider FileSystem -Root "\\$hostname\testshare2" -Credential $Credential
     Write-Host "NAS Laufwerke verbunden"
 }
     else{
-        New-PSDrive -Persist -Name L -PSProvider FileSystem -Root "\\$hostname\testshare" -Scope Global
-        New-PSDrive -Persist -Name K -PSProvider FileSystem -Root "\\$hostname\testshare2" -Scope Global
+        New-PSDrive -Name L -PSProvider FileSystem -Root "\\$hostname\testshare" -Scope Global
+        New-PSDrive -Name K -PSProvider FileSystem -Root "\\$hostname\testshare2" -Scope Global
         Write-Host "FileServer Laufwerke verbunden"
     }
