@@ -12,6 +12,8 @@ Modifications:
 $ipFileServer ="192.168.x.x"
 $ipNAS ="192.168.x.x"
 $hostname = "hostname"
+$MapScriptPath = "c:\secret\map_drives.ps1"
+$TaskName ="RunAsLoggedOnUserTask"
 
 #declare function
 function Set-Hostsfile {
@@ -50,7 +52,15 @@ function Set-Server {
     Clear-DnsClientCache
     net stop workstation /y 
     net start workstation
-    Start-Process powershell -Credential "domain\$Env:username" -ArgumentList "-File 'C:\secret\map_drives.ps1'"
+    #Start-Process powershell -Credential "$Env:USERDOMAIN\$Env:username" -ArgumentList "-File 'C:\secret\map_drives.ps1'"
+    $Action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$MapScriptPath`""
+    $Principal = New-ScheduledTaskPrincipal -GroupId "S-1-5-32-545" 
+    $Task = New-ScheduledTask -Action $Action -Principal $Principal
+    Register-ScheduledTask -TaskName $TaskName -InputObject $Task -Force | Out-Null
+    Start-ScheduledTask -TaskName $TaskName
+    Start-Sleep -Seconds 3
+    Read-Host "Press Enter to continue"
+    Unregister-ScheduledTask -TaskName $TaskName -Confirm:$false
 }
 
 do {

@@ -15,8 +15,10 @@ $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
 
 if ((Get-Content $hostsPath) -match [regex]::Escape($ipNAS)){
     $Credential = Import-Clixml -Path "C:\secret\cred.xml"
-    New-PSDrive -Name L -PSProvider FileSystem -Root "\\$hostname\testshare" -Credential $Credential
-    New-PSDrive -Name K -PSProvider FileSystem -Root "\\$hostname\testshare2" -Credential $Credential
+    $user= $Credential.UserName
+    $password= $Credential.GetNetworkCredential().Password
+    net use L: \\$hostname\testshare $password /user:$user /persistent:yes
+    net use K: \\$hostname\testshare $password /user:$user /persistent:yes
     Write-Host "NAS Laufwerke verbunden"
 }
     else{

@@ -9,8 +9,9 @@ Modifications:
 ##########################################################################
 
 $credpath = "C:\secret\"
+$hostname = "hostname"
 
-$Credential = Get-Credential
+$Credential = Get-Credential -Credential $hostname\$Env:USERNAME
 if (-not(Test-Path $credpath -PathType Container)) {
     New-Item -Path $credpath -ItemType Directory
 }
