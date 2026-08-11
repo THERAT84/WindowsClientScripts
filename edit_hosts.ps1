@@ -64,9 +64,9 @@ function Set-Server {
 
 do {
     Clear-Host
-    Write-Host "=== MEIN AUSWAHLMENÜ ==="
-    Write-Host "1: Verbindung FileServer"
-    Write-Host "2: Verbindung NAS"
+    Write-Host "=== MEIN AUSWAHLMENUE ==="
+    Write-Host "1: Verbindung FileServer (Nuernberg)"
+    Write-Host "2: Verbindung NAS (Muenchen)"
     Write-Host "3: Beenden"
     
     $wahl = Read-Host "Bitte eine Zahl eingeben"
@@ -77,17 +77,17 @@ do {
             Start-Sleep -Milliseconds 200
             Set-Server 
             Write-Host "Konfiguration für Arbeiten auf FileServer abgeschlossen"
-            Read-Host "Drücke Enter zum Fortfahren..."
+            Read-Host "Druecke Enter zum Fortfahren..."
         }
         '2' {
             Set-Hostsfile -Server NAS
             Start-Sleep -Milliseconds 200
             Set-Server 
             Write-Host "Konfiguration für Arbeiten auf dem NAS abgeschlossen"
-            Read-Host "Drücke Enter zum Fortfahren..."
+            Read-Host "Druecke Enter zum Fortfahren..."
         }
         '3' {
-            Write-Host "Tschüss!"
+            Write-Host "Tschuess!"
         }
         default {
             Write-Host "Falsche Eingabe, bitte nochmal." -ForegroundColor Red
