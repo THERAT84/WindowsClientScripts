@@ -1,0 +1,103 @@
+<#########################################################################
+Scriptname:     connect2filer.ps1
+Function:       switches hostsentrys and connects to new share
+Created at:     24.07.2026
+Author:         THERAT84
+Version:        1.0
+Modifications:  Added new function for hostsfile handling
+#>
+##########################################################################
+
+#declare variables
+$ipFileServer ="192.168.x.x"
+$ipNAS ="192.168.x.x"
+$hostname = "hostname"
+
+#declare function
+function Set-Hostsfile {
+    param(
+        [ValidateSet('FileServer','NAS')]
+        [string]$Server
+    )
+
+    $hostsPath = "$env:SystemRoot\System32\drivers\etc\hosts"
+    $hostsentryFileServer = "$ipFileServer`t$hostname"
+    $hostsentryNAS        = "$ipNAS`t$hostname"
+
+    $Target = switch ($Server) {
+        'FileServer' { $hostsentryFileServer }
+        'NAS'        { $hostsentryNAS }
+    }
+
+    Copy-Item $hostsPath "$hostsPath.bak" -Force
+
+    # Datei als einzelne Zeilen lesen
+    $lines = [System.Collections.Generic.List[string]](Get-Content $hostsPath)
+
+    # Alle Einträge mit diesem Hostnamen entfernen
+    for ($i = $lines.Count - 1; $i -ge 0; $i--) {
+        if ($lines[$i] -like "*$hostname*") {
+            $lines.RemoveAt($i)
+        }
+    }
+
+    # neuen Eintrag anhängen
+    $lines.Add($Target)
+    # zurückschreiben
+    $lines | Set-Content -Path $hostsPath -Encoding ASCII
+
+    Write-Host "Hosts-Eintrag gesetzt: $Target"
+}
+function Set-Server {
+    param([string]$IP)
+    Remove-SmbMapping -LocalPath "L:" -Force -ErrorAction SilentlyContinue
+    Remove-SmbMapping -LocalPath "K:" -Force -ErrorAction SilentlyContinue
+    Write-Host "ClearDNS Cache"
+    Clear-DnsClientCache
+    net stop workstation /y 
+    net start workstation
+    if($ipNAS){
+        $Credential = Import-Clixml -Path "C:\secret\cred.xml"
+        New-PSDrive -Persist -Name L -PSProvider FileSystem -Root "\\$hostname\testshare" -Credential $Credential
+        New-PSDrive -Persist -Name K -PSProvider FileSystem -Root "\\$hostname\testshare2" -Credential $Credential
+    }
+        else{
+            New-PSDrive -Persist -Name L -PSProvider FileSystem -Root "\\$hostname\testshare"
+            New-PSDrive -Persist -Name K -PSProvider FileSystem -Root "\\$hostname\testshare2"
+        }
+    
+}
+
+do {
+    Clear-Host
+    Write-Host "=== MEIN AUSWAHLMENÜ ==="
+    Write-Host "1: Verbindung FileServer"
+    Write-Host "2: Verbindung NAS"
+    Write-Host "3: Beenden"
+    
+    $wahl = Read-Host "Bitte eine Zahl eingeben"
+
+    switch ($wahl) {
+        '1' {
+            Set-Hostsfile -Server FileServer
+            Start-Sleep -Milliseconds 200
+            Set-Server -IP $ipFileServer
+            Write-Host "Konfiguration für Arbeiten auf FileServer abgeschlossen"
+            Read-Host "Drücke Enter zum Fortfahren..."
+        }
+        '2' {
+            Set-Hostsfile -Server NAS
+            Start-Sleep -Milliseconds 200
+            Set-Server -IP $ipNAS
+            Write-Host "Konfiguration für Arbeiten auf dem NAS abgeschlossen"
+            Read-Host "Drücke Enter zum Fortfahren..."
+        }
+        '3' {
+            Write-Host "Tschüss!"
+        }
+        default {
+            Write-Host "Falsche Eingabe, bitte nochmal." -ForegroundColor Red
+            Start-Sleep -Seconds 2
+        }
+    }
+} until ($wahl -eq '3')
