@@ -21,8 +21,8 @@ if ((Get-Content $hostsPath) -match [regex]::Escape($ipNAS)){
     $user= $Credential.UserName
     $password= $Credential.GetNetworkCredential().Password
     net use \\$hostname\ipc$ $password /user:$user /persistent:no
-    net use L: \\$hostname\$ShareL $password /user:$user /persistent:yes
-    net use K: \\$hostname\$ShareK $password /user:$user /persistent:yes
+    net use L: \\$hostname\$ShareL $password /user:$user /persistent:no
+    net use K: \\$hostname\$ShareK $password /user:$user /persistent:no
     Write-Host "NAS Laufwerke verbunden"
 }
     else{
