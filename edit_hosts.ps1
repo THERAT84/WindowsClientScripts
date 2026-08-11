@@ -46,6 +46,7 @@ function Set-Hostsfile {
     Write-Host "Hosts-Eintrag gesetzt: $Target"
 }
 function Set-Server {
+    net use \\$hostname\ipc$ /delete /yes
     Remove-SmbMapping -LocalPath "L:" -Force -ErrorAction SilentlyContinue
     Remove-SmbMapping -LocalPath "K:" -Force -ErrorAction SilentlyContinue
     Write-Host "ClearDNS Cache"
