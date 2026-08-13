@@ -9,9 +9,9 @@ Modifications:
 ##########################################################################
 
 #declare variables
-$ipFileServer ="192.168.13.21"
-$ipNAS ="192.168.13.23"
-$hostname = "nvds05"
+$ipFileServer ="192.168.x.x"
+$ipNAS ="192.168.x.x"
+$hostname = "hostname"
 $MapScriptPath = "c:\secret\map_drives.ps1"
 $TaskName ="RunAsLoggedOnUserTask"
 
@@ -53,15 +53,12 @@ function Set-Hostsfile {
     Write-Host "Hosts-Eintrag gesetzt: $Target"
 }
 function Set-Server {
-    Remove-SmbMapping -LocalPath "L:" -Force -ErrorAction SilentlyContinue
-    Remove-SmbMapping -LocalPath "K:" -Force -ErrorAction SilentlyContinue
     Write-Host "ClearDNS Cache"
     Clear-DnsClientCache
     Stop-Service -Name LanmanWorkstation -Force
     Start-Service -Name LanmanWorkstation
     #net stop workstation /y 
     #net start workstation
-    #Start-Process powershell -Credential "$Env:USERDOMAIN\$Env:username" -ArgumentList "-File 'C:\secret\map_drives.ps1'"
     $currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
     $Action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$MapScriptPath`""
     $Principal = New-ScheduledTaskPrincipal -UserId $currentUser -LogonType Interactive -RunLevel Limited 
@@ -75,7 +72,7 @@ function Set-Server {
 
 do {
     Clear-Host
-    Write-Host "=== MEIN AUSWAHLMENÜ ==="
+    Write-Host "=== MEIN AUSWAHLMENUE ==="
     Write-Host "1: Verbindung FileServer"
     Write-Host "2: Verbindung NAS"
     Write-Host "3: Beenden"
@@ -87,18 +84,18 @@ do {
             Set-Hostsfile -Server FileServer
             Start-Sleep -Milliseconds 200
             Set-Server 
-            Write-Host "Konfiguration für Arbeiten auf FileServer abgeschlossen"
-            Read-Host "Drücke Enter zum Fortfahren..."
+            Write-Host "Konfiguration fuer Arbeiten auf FileServer abgeschlossen" -ForegroundColor Green
+            Read-Host "Druecke Enter zum Fortfahren..."
         }
         '2' {
             Set-Hostsfile -Server NAS
             Start-Sleep -Milliseconds 200
             Set-Server 
-            Write-Host "Konfiguration für Arbeiten auf dem NAS abgeschlossen"
-            Read-Host "Drücke Enter zum Fortfahren..."
+            Write-Host "Konfiguration fuer Arbeiten auf dem NAS abgeschlossen" -ForegroundColor Green
+            Read-Host "Druecke Enter zum Fortfahren..."
         }
         '3' {
-            Write-Host "Tschüss!"
+            Write-Host "Tschuess!"
         }
         default {
             Write-Host "Falsche Eingabe, bitte nochmal." -ForegroundColor Red
