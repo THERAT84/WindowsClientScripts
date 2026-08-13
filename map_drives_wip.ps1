@@ -19,15 +19,14 @@ $ShareNAS = "PRD"
 
 Write-Host "Map-Script gestartet"
 Write-Host "Benutzer: $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
-Write-Host "Session: $env:SESSIONNAME"
 
 if ((Get-Content $hostsPath) -match [regex]::Escape($ipNAS)){ 
     $Credential = Get-Credential -UserName mucnas-p01\testcifs -Message "Passwort hier eingeben"
     $user= $Credential.UserName
     $password= $Credential.GetNetworkCredential().Password
     net use \\$hostname /delete /yes 
-    net use L: /delete /yes
-    net use K: /delete /yes
+    net use L: /delete /yes 
+    net use K: /delete /yes 
     Remove-PSDrive -Name L -ErrorAction SilentlyContinue
     Remove-PSDrive -Name K -ErrorAction SilentlyContinue
     Start-Sleep 5
@@ -38,8 +37,8 @@ if ((Get-Content $hostsPath) -match [regex]::Escape($ipNAS)){
 }
 else{
         net use \\$hostname /delete /yes 
-        net use L: /delete /yes
-        net use K: /delete /yes
+        net use L: /delete /yes 
+        net use K: /delete /yes 
         Remove-PSDrive -Name L -ErrorAction SilentlyContinue
         Remove-PSDrive -Name K -ErrorAction SilentlyContinue
         Start-Sleep 5
