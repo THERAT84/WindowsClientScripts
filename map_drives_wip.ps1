@@ -24,9 +24,9 @@ if ((Get-Content $hostsPath) -match [regex]::Escape($ipNAS)){
     $Credential = Get-Credential -UserName mucnas-p01\testcifs -Message "Passwort hier eingeben"
     $user= $Credential.UserName
     $password= $Credential.GetNetworkCredential().Password
-    net use \\$hostname /delete /yes 
-    net use L: /delete /yes 
-    net use K: /delete /yes 
+    net use \\$hostname /delete /yes *> $null
+    net use L: /delete /yes *> $null
+    net use K: /delete /yes *> $null
     Remove-PSDrive -Name L -ErrorAction SilentlyContinue
     Remove-PSDrive -Name K -ErrorAction SilentlyContinue
     Start-Sleep 5
@@ -36,9 +36,9 @@ if ((Get-Content $hostsPath) -match [regex]::Escape($ipNAS)){
     Write-Host "NAS Laufwerke verbunden"
 }
 else{
-        net use \\$hostname /delete /yes 
-        net use L: /delete /yes 
-        net use K: /delete /yes 
+        net use \\$hostname /delete /yes *> $null
+        net use L: /delete /yes *> $null
+        net use K: /delete /yes *> $null
         Remove-PSDrive -Name L -ErrorAction SilentlyContinue
         Remove-PSDrive -Name K -ErrorAction SilentlyContinue
         Start-Sleep 5
