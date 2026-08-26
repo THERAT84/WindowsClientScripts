@@ -21,14 +21,26 @@ reg.exe add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\
 New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\" -Name "TaskbarAl" -PropertyType DWord -Value 0 -Force
 
 # Disable Taskbar Widgets
-reg add "HKLM\Software\Policies\Microsoft\Dsh" /v "AllowNewsAndInterests" /t REG_DWORD /d "0" /f
+New-Item -Path "HKLM:\Software\Policies\Microsoft\Dsh" -Force
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Dsh" -Name "AllowNewsAndInterests" -Value 0 -PropertyType DWord -Force
+#reg add "HKLM\Software\Policies\Microsoft\Dsh" /v "AllowNewsAndInterests" /t REG_DWORD /d "0" /f
+
+# Unpin Store from Taskbar
+New-Item -Path "HKCU:\Software\Policies\Microsoft\Windows\Explorer" -Force
+New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\Explorer" -Name "NoPinningStoreToTaskbar" -Value 1 -PropertyType DWord -Force
+Get-Process -Name explorer | Stop-Process -Force
+New-ItemProperty -Path "HKCU:\Software\Policies\Microsoft\Windows\Explorer" -Name "NoPinningStoreToTaskbar" -Value 0 -PropertyType DWord -Force
+
+#Disable Fastboot
+New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Power" -Name "HiberbootEnabled" -Value 0 -PropertyType DWord -Force
 
 # Disable Search on taskbar
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Search" /v "SearchButtonMarkup" /t REG_DWORD /d 0 /f
 reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Search" /v "SearchboxTaskbarMode" /t REG_DWORD /d 0 /f
 
-# enable NumLock
 
+
+# enable NumLock
 $numlockvalue = Get-ItemProperty -Path 'Registry::HKEY_USERS\.DEFAULT\Control Panel\Keyboard' -Name InitialKeyBoardIndicators
 if ($numlockvalue -eq 0)
 {
