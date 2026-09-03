@@ -21,7 +21,13 @@ Write-Host "Map-Script gestartet"
 Write-Host "Benutzer: $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)"
 
 if ((Get-Content $hostsPath) -match [regex]::Escape($ipNAS)){ 
-    $Credential = Get-Credential -UserName mucnas-p01\testcifs -Message "Passwort hier eingeben"
+    $Credential = $host.ui.PromptForCredential(
+    "Anmeldung erforderlich", 
+    "Bitte Passwort eingeben für:", 
+    "mucnas-p01\testcifs",  # <-- Hier trägst du den Benutzernamen ein
+    ""
+    )
+    #$Credential = Get-Credential -UserName mucnas-p01\testcifs -Message "Passwort hier eingeben"
     $user= $Credential.UserName
     $password= $Credential.GetNetworkCredential().Password
     net use \\$hostname /delete /yes *> $null
