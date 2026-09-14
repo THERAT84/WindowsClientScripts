@@ -36,20 +36,13 @@ function Set-Hostsfile {
 
     # Hosts aus sauberem Backup wiederherstellen
     Copy-Item $backup $hostsPath -Force
-
     # Originalinhalt laden
     $lines = @(Get-Content $backup)
-
     $lines += $target
-
     $tempFile = "$hostsPath.tmp"
-
     $lines | Set-Content $tempFile -Encoding ASCII
-
     Copy-Item $tempFile $hostsPath -Force
-
     Remove-Item $tempFile
-    
     Write-Host "Hosts-Eintrag gesetzt: $Target"
 }
 function Set-Server {
@@ -57,11 +50,11 @@ function Set-Server {
     Clear-DnsClientCache
     Stop-Service -Name LanmanWorkstation -Force
     Start-Service -Name LanmanWorkstation
-    #net stop workstation /y 
-    #net start workstation
+    net stop workstation /y 
+    net start workstation
     $currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
     $Action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$MapScriptPath`""
-    $Principal = New-ScheduledTaskPrincipal -UserId $currentUser -LogonType Interactive -RunLevel Limited 
+    $Principal = New-ScheduledTaskPrincipal -UserId $currentUser -LogonType Interactive -RunLevel Limited
     $Task = New-ScheduledTask -Action $Action -Principal $Principal
     Register-ScheduledTask -TaskName $TaskName -InputObject $Task -Force | Out-Null
     Start-ScheduledTask -TaskName $TaskName
@@ -73,10 +66,10 @@ function Set-Server {
 do {
     Clear-Host
     Write-Host "=== MEIN AUSWAHLMENUE ==="
-    Write-Host "1: Verbindung FileServer"
-    Write-Host "2: Verbindung NAS"
+    Write-Host "1: Verbindung FileServer (Nuernberg)"
+    Write-Host "2: Verbindung NAS (Muenchen)"
     Write-Host "3: Beenden"
-    
+
     $wahl = Read-Host "Bitte eine Zahl eingeben"
 
     switch ($wahl) {
@@ -103,3 +96,4 @@ do {
         }
     }
 } until ($wahl -eq '3')
+ 
